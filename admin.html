@@ -42,7 +42,7 @@ const firebaseConfig = {
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 let editingId=null;
 const $=id=>document.getElementById(id);
-$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginMsg").textContent="";}catch(e){console.error("Firebase login error:",e);$("loginMsg").textContent="Login error: "+(e.code||e.message||"Unknown error");}};
+$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value,$("password").value);$("loginMsg").textContent="";}catch(e){$("loginMsg").textContent="লগইন হয়নি: ইমেইল/পাসওয়ার্ড পরীক্ষা করুন।";}};
 $("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async user=>{
  if(!user){$("login").classList.remove("hidden");$("panel").classList.add("hidden");return;}
@@ -84,7 +84,7 @@ $("productForm").onsubmit=async e=>{
  }catch(err){console.error(err);$("productMsg").textContent="সংরক্ষণ হয়নি। Firestore Rules ও সেটআপ পরীক্ষা করুন।";}
 };
 async function loadOrders(){const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));$("orders").innerHTML="";
- snap.forEach(d=>{const o=d.data(),el=document.createElement("div");el.className="order";const title=document.createElement("b");title.textContent=`${o.productName} · ${o.total} টাকা · ${o.status||"নতুন"}`;const detail=document.createElement("p");detail.textContent=`${o.customerName} | ${o.phone} | ${o.size} | ${o.quantity} পিস | ${o.address}`;const select=document.createElement("select");["নতুন","কনফার্ম","প্রসেসিং","পাঠানো হয়েছে","ডেলিভারি সম্পন্ন","বাতিল"].forEach(s=>{let op=document.createElement("option");op.value=s;op.textContent=s;select.append(op)});select.value=o.status||"নতুন";select.onchange=()=>updateDoc(doc(db,"orders",d.id),{status:select.value});el.append(title,detail,select);$("orders").append(el);});
+ snap.forEach(d=>{const o=d.data(),el=document.createElement("div");el.className="order";const title=document.createElement("b");title.textContent=`${o.productName} · ${o.total} টাকা · ${o.status||"নতুন"}`;const detail=document.createElement("p");detail.textContent=`কাস্টমার: ${o.customerName} | সাইজ: ${o.size} | পরিমাণ: ${o.quantity} পিস | ডেলিভারি: ${o.area||""} | ঠিকানা: ${o.address}`;const phone=document.createElement("a");phone.href="tel:"+String(o.phone||"").replace(/[^0-9+]/g,"");phone.textContent="ফোন করুন: "+(o.phone||"নম্বর নেই");phone.style.cssText="display:inline-block;margin:6px 0;color:#087b43;font-weight:700";const select=document.createElement("select");["নতুন","ফোনে যোগাযোগ করা হয়েছে","কনফার্ম","প্রসেসিং","পাঠানো হয়েছে","ডেলিভারি সম্পন্ন","বাতিল"].forEach(s=>{let op=document.createElement("option");op.value=s;op.textContent=s;select.append(op)});select.value=o.status||"নতুন";select.onchange=async()=>{try{await updateDoc(doc(db,"orders",d.id),{status:select.value});}catch(err){alert("স্ট্যাটাস আপডেট হয়নি। Rules পরীক্ষা করুন।");}};el.append(title,detail,phone,select);$("orders").append(el);});
  if(!snap.size)$("orders").textContent="এখনো কোনো অর্ডার নেই।";
 }
 </script></body></html>
