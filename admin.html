@@ -21,9 +21,9 @@ button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.d
 <div>
 <label>প্রোডাক্টের ক্যাটাগরি</label>
 <select id="category">
-<option value="T-shirt">T-shirt</option>
-<option value="Pants">Pants</option>
-<option value="Shoes">Shoes</option>
+<option value="tshirt">T-shirt (টি-শার্ট)</option>
+<option value="pant">Pants / Pant (প্যান্ট)</option>
+<option value="shoe">Shoes / Shoe (জুতা)</option>
 </select>
 </div>
 <div>
@@ -62,7 +62,8 @@ onAuthStateChanged(auth,async user=>{
  if(!user){$("login").classList.remove("hidden");$("panel").classList.add("hidden");return;}
  const role=await getDoc(doc(db,"admins",user.uid));
  if(!role.exists()||role.data().active!==true){await signOut(auth);$("loginMsg").textContent="এই অ্যাকাউন্টের Admin অনুমতি নেই।";return;}
- $("login").classList.add("hidden");$("panel").classList.remove("hidden");await loadProducts();await loadOrders();
+ $("login").classList.add("hidden");$("panel").classList.add("hidden");
+ $("panel").classList.remove("hidden");await loadProducts();await loadOrders();
 });
 async function loadProducts(){
  const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
@@ -70,11 +71,11 @@ async function loadProducts(){
   const p=d.data(),el=document.createElement("div");el.className="item";
   el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:""}<div style="flex:1"><b></b> <span class="badge"></span><br><small></small></div><button type="button" class="editBtn">এডিট</button><button type="button" class="danger deleteBtn">ডিলিট</button>`;
   el.querySelector("b").textContent=p.name;
-  el.querySelector(".badge").textContent=p.category||"T-shirt";
+  el.querySelector(".badge").textContent=p.category||"tshirt";
   el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??0}`;
   el.querySelector(".editBtn").onclick=()=>{
    editingId=d.id;
-   $("category").value=p.category||"T-shirt";
+   $("category").value=p.category||"tshirt";
    $("pname").value=p.name||"";
    $("price").value=p.price||"";
    $("stock").value=p.stock??0;
