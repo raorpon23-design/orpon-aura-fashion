@@ -140,7 +140,7 @@ footer b{color:var(--cream)}
 </head>
 <body>
 
-<div class="strip">🔥 যেকোনো টি-শার্ট মাত্র <b>৪৫০ টাকা</b> · ঢাকায় ডেলিভারি ৭০ টাকা</div>
+<div class="strip">🔥 নতুন কালেকশন · সহজে অর্ডার করুন · ঢাকায় ডেলিভারি ৭০ টাকা</div>
 
 <header>
   <div class="wrap nav">
@@ -160,7 +160,7 @@ footer b{color:var(--cream)}
     <div>
       <span class="tag"><span>●</span> নতুন কালেকশন এসেছে</span>
       <h1>তোমার স্টাইলে<br>জ্বলে উঠুক <em>আউরা</em></h1>
-      <p>আরামদায়ক কাপড়, নিখুঁত ফিটিং আর চোখ-ধাঁধানো রং। প্রতিটি টি-শার্ট মাত্র ৪৫০ টাকা, ঘরে বসেই অর্ডার করুন।</p>
+      <p>আরামদায়ক কাপড়, নিখুঁত ফিটিং আর চোখ-ধাঁধানো রং। পছন্দের ডিজাইন বেছে নিয়ে ঘরে বসেই অর্ডার করুন।</p>
       <div class="cta">
         <a href="#products" class="pill">কালেকশন দেখুন</a>
         <a href="#order" class="pill line">এখনই অর্ডার করুন</a>
@@ -186,7 +186,7 @@ footer b{color:var(--cream)}
   <div class="wrap">
     <div class="head">
       <h2>আমাদের <em>কালেকশন</em></h2>
-      <p>পছন্দের রং বেছে নিন। সব টি-শার্টের দাম একই — ৪৫০ টাকা।</p>
+      <p>পছন্দের রং বেছে নিন। প্রিমিয়াম টি-শার্টের নতুন কালেকশন দেখুন।</p>
     </div>
     <div class="grid" id="grid"></div>
   </div>
@@ -277,70 +277,103 @@ footer b{color:var(--cream)}
 
 <a class="float" id="floatWa" href="#" target="_blank" rel="noopener">💬 WhatsApp এ মেসেজ দিন</a>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "PASTE_FIREBASE_API_KEY",
+  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_PROJECT_ID.firebasestorage.app",
+  messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 const WA = "8801738882468";
 const waLink = m => "https://wa.me/" + WA + (m ? "?text=" + encodeURIComponent(m) : "");
-const PRICE = 450;
 const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
-
-const products = [
-  {name:"ক্লাসিক ব্ল্যাক", c:"#1b1b1b", bg:"#e6dfd2"},
-  {name:"পিওর হোয়াইট", c:"#fafafa", bg:"#d9d2c4"},
-  {name:"নেভি ব্লু", c:"#1f3a68", bg:"#d7e0ee"},
-  {name:"মেরুন", c:"#7a1f2e", bg:"#f0d9dc"},
-  {name:"অলিভ গ্রিন", c:"#5b6b3a", bg:"#e1e6d2"},
-  {name:"স্কাই ব্লু", c:"#5aa6d6", bg:"#dcecf6"},
-  {name:"গ্রে মেলাঞ্জ", c:"#8a8a94", bg:"#e4e4e8"},
-  {name:"মাস্টার্ড ইয়েলো", c:"#d9a528", bg:"#f6e9c4"}
-];
-
 const shirt = c => `<path d="M32 12 L8 27 L19 44 L28 38 L28 90 L72 90 L72 38 L81 44 L92 27 L68 12 C63 22 37 22 32 12Z" fill="${c}" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/><path d="M32 12 C37 22 63 22 68 12" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.6"/>`;
 const shirtSvg = c => `<svg viewBox="0 0 100 100">${shirt(c)}</svg>`;
-
 document.getElementById("h1").innerHTML = shirt("#1b1b1b");
 document.getElementById("h2").innerHTML = shirt("#fafafa");
-
-const words = ["Orpon Aura Fashion","মাত্র ৪৫০ টাকা","প্রিমিয়াম কোয়ালিটি","সারা বাংলাদেশে ডেলিভারি"];
+const words = ["Orpon Aura Fashion","প্রিমিয়াম কালেকশন","সারা বাংলাদেশে ডেলিভারি"];
 const mq = words.map(w => `<span>${w}</span>`).join("");
 document.getElementById("mq").innerHTML = mq + mq + mq + mq;
 
 const grid = document.getElementById("grid"), sel = document.getElementById("product");
-products.forEach((p, i) => {
-  grid.insertAdjacentHTML("beforeend",
-   `<div class="card"><div class="pic" style="background:${p.bg}">${i<3?'<span class="new">নতুন</span>':''}${shirtSvg(p.c)}</div>
-    <div class="info"><h3>${p.name}</h3>
-    <div class="row"><div class="price">${bn(PRICE)}৳</div><button class="add" onclick="pick(${i})">অর্ডার</button></div></div></div>`);
-  sel.insertAdjacentHTML("beforeend", `<option value="${i}">${p.name}</option>`);
-});
-function pick(i){ sel.value = i; document.getElementById("order").scrollIntoView({behavior:"smooth"}); }
+let products = [];
+function renderProducts(){
+  grid.innerHTML = ""; sel.innerHTML = "";
+  if (!products.length) {
+    grid.innerHTML = '<p>নতুন কালেকশন শিগগিরই যোগ করা হবে।</p>';
+    return;
+  }
+  products.forEach((p,i) => {
+    const price = Number(p.price || 450);
+    const visual = p.imageUrl
+      ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">`
+      : shirtSvg(p.color || "#1b1b1b");
+    grid.insertAdjacentHTML("beforeend",
+      `<div class="card"><div class="pic" style="background:${p.bg || '#e6dfd2'}">${p.isNew?'<span class="new">নতুন</span>':''}${visual}</div>
+       <div class="info"><h3>${p.name}</h3><div class="row"><div class="price">${bn(price)}৳</div><button class="add" data-pick="${i}">অর্ডার</button></div></div></div>`);
+    sel.insertAdjacentHTML("beforeend", `<option value="${i}">${p.name}</option>`);
+  });
+  grid.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => pick(Number(b.dataset.pick))));
+}
+async function loadProducts(){
+  try {
+    const snap = await getDocs(collection(db,"products"));
+    products = snap.docs.map(d => ({id:d.id,...d.data()})).filter(p => p.active !== false);
+    renderProducts();
+  } catch(err) {
+    console.error(err);
+    grid.innerHTML = '<p>প্রোডাক্ট লোড করা যাচ্ছে না। Firebase সেটআপ পরীক্ষা করুন।</p>';
+  }
+}
+function pick(i){ sel.value = String(i); document.getElementById("order").scrollIntoView({behavior:"smooth"}); }
 
 const qty = document.getElementById("qty"), area = document.getElementById("area");
 function calc(){
-  const q = Math.max(1, parseInt(qty.value) || 1), items = q * PRICE, del = parseInt(area.value);
-  sItems.textContent = bn(items) + " ৳"; sDel.textContent = bn(del) + " ৳"; sTotal.textContent = bn(items + del) + " ৳";
-  return {q, items, del, total: items + del};
+  const q = Math.max(1, parseInt(qty.value) || 1);
+  const p = products[Number(sel.value)];
+  const unit = Number(p?.price || 450);
+  const items = q * unit, del = parseInt(area.value);
+  document.getElementById("sItems").textContent = bn(items) + " ৳";
+  document.getElementById("sDel").textContent = bn(del) + " ৳";
+  document.getElementById("sTotal").textContent = bn(items + del) + " ৳";
+  return {q, items, del, total: items + del, unit};
 }
-qty.addEventListener("input", calc); area.addEventListener("change", calc); calc();
+qty.addEventListener("input", calc); area.addEventListener("change", calc);
+sel.addEventListener("change", calc);
+await loadProducts(); calc();
 
-orderForm.addEventListener("submit", e => {
+document.getElementById("orderForm").addEventListener("submit", async e => {
   e.preventDefault();
+  const p = products[Number(sel.value)];
+  if (!p) return alert("অনুগ্রহ করে একটি টি-শার্ট নির্বাচন করুন।");
   const c = calc();
-  const msg =
-`নতুন অর্ডার - Orpon Aura Fashion
-━━━━━━━━━━━━
-টি-শার্ট: ${products[sel.value].name}
-সাইজ: ${size.value}
-পরিমাণ: ${c.q} পিস
-দাম: ${c.items} টাকা
-ডেলিভারি (${area.options[area.selectedIndex].text.split(" (")[0]}): ${c.del} টাকা
-সর্বমোট: ${c.total} টাকা
-━━━━━━━━━━━━
-নাম: ${name.value}
-মোবাইল: ${phone.value}
-ঠিকানা: ${address.value}`;
-  window.open(waLink(msg), "_blank");
+  const order = {
+    productId:p.id, productName:p.name, size:document.getElementById("size").value,
+    quantity:c.q, unitPrice:c.unit, itemTotal:c.items, delivery:c.del, total:c.total,
+    customerName:document.getElementById("name").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    area:document.getElementById("area").options[document.getElementById("area").selectedIndex].text,
+    address:document.getElementById("address").value.trim(),
+    status:"নতুন", createdAt:serverTimestamp()
+  };
+  try {
+    await addDoc(collection(db,"orders"), order);
+    const msg = `নতুন অর্ডার - Orpon Aura Fashion\n━━━━━━━━━━━━\nটি-শার্ট: ${order.productName}\nসাইজ: ${order.size}\nপরিমাণ: ${order.quantity} পিস\nসর্বমোট: ${order.total} টাকা\nনাম: ${order.customerName}\nমোবাইল: ${order.phone}\nঠিকানা: ${order.address}`;
+    window.open(waLink(msg), "_blank");
+    alert("অর্ডার জমা হয়েছে। ধন্যবাদ!");
+    e.target.reset(); calc();
+  } catch(err) {
+    console.error(err);
+    alert("অর্ডার জমা হয়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।");
+  }
 });
-
 const hello = "আসসালামু আলাইকুম, আমি Orpon Aura Fashion থেকে টি-শার্ট সম্পর্কে জানতে চাই।";
 ["navWa","waBtn","floatWa"].forEach(id => document.getElementById(id).href = waLink(hello));
 </script>

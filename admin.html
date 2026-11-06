@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin | Orpon Aura Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f1e9;color:#141414;font-family:'Hind Siliguri',sans-serif}
+.wrap{max-width:980px;margin:30px auto;padding:20px}.box{background:white;border:1px solid #e9e0d1;border-radius:18px;padding:22px;margin:16px 0}
+h1{margin:0 0 8px}.muted{color:#6b665e}input,select,button{font:inherit;padding:12px;border:1px solid #ddd;border-radius:10px;width:100%;margin:6px 0}
+button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.danger{background:#a52626}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{display:flex;align-items:center;gap:14px;border-top:1px solid #eee;padding:12px 0}.item img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.item button{width:auto;padding:8px 12px}.hidden{display:none}.order{border-top:1px solid #eee;padding:12px 0;overflow-wrap:anywhere}
+@media(max-width:600px){.row{grid-template-columns:1fr}.wrap{padding:12px}}
+</style></head><body><main class="wrap">
+<h1>ORPON AURA FASHION</h1><p class="muted">Admin Dashboard</p>
+<section id="login" class="box"><h2>Admin Login</h2><input id="email" type="email" placeholder="Admin email"><input id="password" type="password" placeholder="Password"><button id="loginBtn">লগইন</button><p id="loginMsg" class="muted"></p></section>
+<section id="panel" class="hidden">
+<div class="box"><div class="row"><h2>প্রোডাক্ট ম্যানেজমেন্ট</h2><button id="logoutBtn">লগআউট</button></div>
+<form id="productForm">
+<input id="pname" required placeholder="T-shirt-এর নাম">
+<div class="row"><input id="price" type="number" min="1" required placeholder="দাম (টাকা)"><input id="stock" type="number" min="0" placeholder="স্টক"></div>
+<label>প্রোডাক্টের ছবি</label><input id="photo" type="file" accept="image/*">
+<input id="color" placeholder="ছবি না থাকলে T-shirt রং (যেমন #1b1b1b)">
+<button type="submit">প্রোডাক্ট যোগ করুন</button><p id="productMsg" class="muted"></p>
+</form><div id="products"></div></div>
+<div class="box"><h2>কাস্টমার অর্ডার</h2><div id="orders">লোড হচ্ছে...</div></div>
+</section></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import {getFirestore,collection,addDoc,getDocs,doc,deleteDoc,updateDoc,query,orderBy,getDoc} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+const firebaseConfig={apiKey:"PASTE_FIREBASE_API_KEY",authDomain:"PASTE_PROJECT_ID.firebaseapp.com",projectId:"PASTE_PROJECT_ID",storageBucket:"PASTE_PROJECT_ID.firebasestorage.app",messagingSenderId:"PASTE_MESSAGING_SENDER_ID",appId:"PASTE_APP_ID"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);
+const $=id=>document.getElementById(id);
+$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value,$("password").value);$("loginMsg").textContent="";}catch(e){$("loginMsg").textContent="লগইন হয়নি: ইমেইল/পাসওয়ার্ড পরীক্ষা করুন।";}};
+$("logoutBtn").onclick=()=>signOut(auth);
+onAuthStateChanged(auth,async user=>{
+ if(!user){$("login").classList.remove("hidden");$("panel").classList.add("hidden");return;}
+ const role=await getDoc(doc(db,"admins",user.uid));
+ if(!role.exists()||role.data().active!==true){await signOut(auth);$("loginMsg").textContent="এই অ্যাকাউন্টের Admin অনুমতি নেই।";return;}
+ $("login").classList.add("hidden");$("panel").classList.remove("hidden");await loadProducts();await loadOrders();
+});
+async function loadProducts(){const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
+ snap.forEach(d=>{const p=d.data();const el=document.createElement("div");el.className="item";el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}">`:""}<div style="flex:1"><b></b><br><small></small></div><button class="danger">ডিলিট</button>`;
+ el.querySelector("b").textContent=p.name;el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??"—"}`;
+ el.querySelector("button").onclick=async()=>{if(confirm("এই প্রোডাক্ট মুছবেন?")){await deleteDoc(doc(db,"products",d.id));await loadProducts();}};$("products").append(el);});
+}
+$("productForm").onsubmit=async e=>{e.preventDefault();try{let imageUrl="",file=$("photo").files[0];if(file){const path=`products/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;const s=ref(storage,path);await uploadBytes(s,file);imageUrl=await getDownloadURL(s);}
+ await addDoc(collection(db,"products"),{name:$("pname").value.trim(),price:Number($("price").value),stock:Number($("stock").value||0),color:$("color").value||"#1b1b1b",imageUrl,active:true,createdAt:new Date()});
+ e.target.reset();$("productMsg").textContent="প্রোডাক্ট যোগ হয়েছে।";await loadProducts();}catch(err){console.error(err);$("productMsg").textContent="যোগ করা যায়নি। Firebase সেটআপ ও Storage rules পরীক্ষা করুন।";}};
+async function loadOrders(){const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));$("orders").innerHTML="";
+ snap.forEach(d=>{const o=d.data(),el=document.createElement("div");el.className="order";const title=document.createElement("b");title.textContent=`${o.productName} · ${o.total} টাকা · ${o.status||"নতুন"}`;const detail=document.createElement("p");detail.textContent=`${o.customerName} | ${o.phone} | ${o.size} | ${o.quantity} পিস | ${o.address}`;const select=document.createElement("select");["নতুন","কনফার্ম","প্রসেসিং","পাঠানো হয়েছে","ডেলিভারি সম্পন্ন","বাতিল"].forEach(s=>{let op=document.createElement("option");op.value=s;op.textContent=s;select.append(op)});select.value=o.status||"নতুন";select.onchange=()=>updateDoc(doc(db,"orders",d.id),{status:select.value});el.append(title,detail,select);$("orders").append(el);});
+ if(!snap.size)$("orders").textContent="এখনো কোনো অর্ডার নেই।";
+}
+</script></body></html>
