@@ -11,16 +11,18 @@ button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.d
 .item button{width:auto;padding:8px 12px}.hidden{display:none}.order{border-top:1px solid #eee;padding:12px 0;overflow-wrap:anywhere}
 @media(max-width:600px){.row{grid-template-columns:1fr}.wrap{padding:12px}}
 </style></head><body><main class="wrap">
-<h1>ORPON AURA FASHION</h1><p class="muted">Admin Dashboard</p>
+<h1>ORPON AURA FASHION</h1><p class="muted">Admin Dashboard · শুধু অনুমোদিত Admin ব্যবহার করতে পারবেন</p>
 <section id="login" class="box"><h2>Admin Login</h2><input id="email" type="email" placeholder="Admin email"><input id="password" type="password" placeholder="Password"><button id="loginBtn">লগইন</button><p id="loginMsg" class="muted"></p></section>
 <section id="panel" class="hidden">
 <div class="box"><div class="row"><h2>প্রোডাক্ট ম্যানেজমেন্ট</h2><button id="logoutBtn">লগআউট</button></div>
 <form id="productForm">
 <input id="pname" required placeholder="T-shirt-এর নাম">
 <div class="row"><input id="price" type="number" min="1" required placeholder="দাম (টাকা)"><input id="stock" type="number" min="0" placeholder="স্টক"></div>
-<label>প্রোডাক্টের ছবি</label><input id="photo" type="file" accept="image/*">
+<label>প্রোডাক্ট ছবির লিংক (Image URL)</label><input id="imageUrl" type="url" placeholder="https://example.com/tshirt.jpg">
 <input id="color" placeholder="ছবি না থাকলে T-shirt রং (যেমন #1b1b1b)">
-<button type="submit">প্রোডাক্ট যোগ করুন</button><p id="productMsg" class="muted"></p>
+<button type="submit" id="saveProductBtn">প্রোডাক্ট যোগ করুন</button>
+<button type="button" id="cancelEditBtn" class="hidden">এডিট বাতিল</button>
+<p id="productMsg" class="muted"></p>
 </form><div id="products"></div></div>
 <div class="box"><h2>কাস্টমার অর্ডার</h2><div id="orders">লোড হচ্ছে...</div></div>
 </section></main>
@@ -28,11 +30,19 @@ button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.d
 import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import {getFirestore,collection,addDoc,getDocs,doc,deleteDoc,updateDoc,query,orderBy,getDoc} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import {getStorage,ref,uploadBytes,getDownloadURL,deleteObject} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
-const firebaseConfig={apiKey:"PASTE_FIREBASE_API_KEY",authDomain:"PASTE_PROJECT_ID.firebaseapp.com",projectId:"PASTE_PROJECT_ID",storageBucket:"PASTE_PROJECT_ID.firebasestorage.app",messagingSenderId:"PASTE_MESSAGING_SENDER_ID",appId:"PASTE_APP_ID"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),storage=getStorage(app);
+const firebaseConfig = {
+  apiKey: "AIzaSyAVz2l2GJ_Qcd5FschRCi3jUpDYtlNEHuY",
+  authDomain: "orpon-aura-fashion.firebaseapp.com",
+  projectId: "orpon-aura-fashion",
+  storageBucket: "orpon-aura-fashion.firebasestorage.app",
+  messagingSenderId: "922327604021",
+  appId: "1:922327604021:web:f360e1ff05de7dd86e8a7c",
+  measurementId: "G-JRNJ19FESH"
+};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+let editingId=null;
 const $=id=>document.getElementById(id);
-$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value,$("password").value);$("loginMsg").textContent="";}catch(e){$("loginMsg").textContent="লগইন হয়নি: ইমেইল/পাসওয়ার্ড পরীক্ষা করুন।";}};
+$("loginBtn").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginMsg").textContent="";}catch(e){console.error("Firebase login error:",e);$("loginMsg").textContent="Login error: "+(e.code||e.message||"Unknown error");}};
 $("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async user=>{
  if(!user){$("login").classList.remove("hidden");$("panel").classList.add("hidden");return;}
@@ -40,14 +50,39 @@ onAuthStateChanged(auth,async user=>{
  if(!role.exists()||role.data().active!==true){await signOut(auth);$("loginMsg").textContent="এই অ্যাকাউন্টের Admin অনুমতি নেই।";return;}
  $("login").classList.add("hidden");$("panel").classList.remove("hidden");await loadProducts();await loadOrders();
 });
-async function loadProducts(){const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
- snap.forEach(d=>{const p=d.data();const el=document.createElement("div");el.className="item";el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}">`:""}<div style="flex:1"><b></b><br><small></small></div><button class="danger">ডিলিট</button>`;
- el.querySelector("b").textContent=p.name;el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??"—"}`;
- el.querySelector("button").onclick=async()=>{if(confirm("এই প্রোডাক্ট মুছবেন?")){await deleteDoc(doc(db,"products",d.id));await loadProducts();}};$("products").append(el);});
+async function loadProducts(){
+ const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
+ snap.forEach(d=>{
+  const p=d.data(),el=document.createElement("div");el.className="item";
+  el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:""}<div style="flex:1"><b></b><br><small></small></div><button type="button" class="editBtn">এডিট</button><button type="button" class="danger deleteBtn">ডিলিট</button>`;
+  el.querySelector("b").textContent=p.name;
+  el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??0}`;
+  el.querySelector(".editBtn").onclick=()=>{
+   editingId=d.id;$("pname").value=p.name||"";$("price").value=p.price||"";$("stock").value=p.stock??0;
+   $("imageUrl").value=p.imageUrl||"";$("color").value=p.color||"#1b1b1b";
+   $("saveProductBtn").textContent="পরিবর্তন সংরক্ষণ";$("cancelEditBtn").classList.remove("hidden");
+   $("productMsg").textContent="এখন তথ্য পরিবর্তন করে সংরক্ষণ করুন।";
+   $("productForm").scrollIntoView({behavior:"smooth"});
+  };
+  el.querySelector(".deleteBtn").onclick=async()=>{if(confirm("এই প্রোডাক্ট মুছবেন?")){await deleteDoc(doc(db,"products",d.id));await loadProducts();}};
+  $("products").append(el);
+ });
 }
-$("productForm").onsubmit=async e=>{e.preventDefault();try{let imageUrl="",file=$("photo").files[0];if(file){const path=`products/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;const s=ref(storage,path);await uploadBytes(s,file);imageUrl=await getDownloadURL(s);}
- await addDoc(collection(db,"products"),{name:$("pname").value.trim(),price:Number($("price").value),stock:Number($("stock").value||0),color:$("color").value||"#1b1b1b",imageUrl,active:true,createdAt:new Date()});
- e.target.reset();$("productMsg").textContent="প্রোডাক্ট যোগ হয়েছে।";await loadProducts();}catch(err){console.error(err);$("productMsg").textContent="যোগ করা যায়নি। Firebase সেটআপ ও Storage rules পরীক্ষা করুন।";}};
+function resetProductForm(){
+ editingId=null;$("productForm").reset();$("saveProductBtn").textContent="প্রোডাক্ট যোগ করুন";
+ $("cancelEditBtn").classList.add("hidden");
+}
+$("cancelEditBtn").onclick=resetProductForm;
+$("productForm").onsubmit=async e=>{
+ e.preventDefault();
+ try{
+  const data={name:$("pname").value.trim(),price:Number($("price").value),stock:Number($("stock").value||0),
+   color:$("color").value||"#1b1b1b",imageUrl:$("imageUrl").value.trim(),active:true,updatedAt:new Date()};
+  if(editingId){await updateDoc(doc(db,"products",editingId),data);}
+  else{data.createdAt=new Date();await addDoc(collection(db,"products"),data);}
+  resetProductForm();$("productMsg").textContent="প্রোডাক্টের তথ্য সংরক্ষণ হয়েছে।";await loadProducts();
+ }catch(err){console.error(err);$("productMsg").textContent="সংরক্ষণ হয়নি। Firestore Rules ও সেটআপ পরীক্ষা করুন।";}
+};
 async function loadOrders(){const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));$("orders").innerHTML="";
  snap.forEach(d=>{const o=d.data(),el=document.createElement("div");el.className="order";const title=document.createElement("b");title.textContent=`${o.productName} · ${o.total} টাকা · ${o.status||"নতুন"}`;const detail=document.createElement("p");detail.textContent=`${o.customerName} | ${o.phone} | ${o.size} | ${o.quantity} পিস | ${o.address}`;const select=document.createElement("select");["নতুন","কনফার্ম","প্রসেসিং","পাঠানো হয়েছে","ডেলিভারি সম্পন্ন","বাতিল"].forEach(s=>{let op=document.createElement("option");op.value=s;op.textContent=s;select.append(op)});select.value=o.status||"নতুন";select.onchange=()=>updateDoc(doc(db,"orders",d.id),{status:select.value});el.append(title,detail,select);$("orders").append(el);});
  if(!snap.size)$("orders").textContent="এখনো কোনো অর্ডার নেই।";
