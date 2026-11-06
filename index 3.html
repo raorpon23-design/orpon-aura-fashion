@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orpon Aura Fashion | প্রিমিয়াম কালেকশন</title>
+<meta name="description" content="Orpon Aura Fashion - প্রিমিয়াম টি-শার্ট, প্যান্ট ও জুতার কালেকশন।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f6f1e9;--ink:#141414;--coral:#ff5a3c;--sand:#e9e0d1;--white:#fff;--muted:#6b665e;--green:#1faa59}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Hind Siliguri',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,92%);margin:auto}
+.serif{font-family:'Playfair Display','Hind Siliguri',serif}
+
+/* top strip */
+.strip{background:var(--ink);color:var(--cream);font-size:.85rem;text-align:center;padding:7px 10px;letter-spacing:.3px}
+.strip b{color:var(--coral)}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(246,241,233,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--sand)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+.logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;letter-spacing:-.5px}
+.logo i{color:var(--coral);font-style:italic}
+.menu{display:flex;gap:26px;font-weight:500}
+.menu a:hover{color:var(--coral)}
+.pill{background:var(--ink);color:var(--cream);padding:10px 22px;border-radius:999px;font-weight:600;transition:.2s;display:inline-block;border:none;cursor:pointer;font-family:inherit;font-size:1rem}
+.pill:hover{background:var(--coral);transform:translateY(-2px)}
+.pill.green{background:var(--green)}
+.pill.green:hover{background:#168a47}
+.pill.line{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pill.line:hover{background:var(--ink);color:var(--cream)}
+@media(max-width:760px){.menu{display:none}}
+
+/* hero */
+.hero{padding:60px 0 70px}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.tag{display:inline-block;background:var(--white);border:1px solid var(--sand);padding:6px 16px;border-radius:999px;font-size:.88rem;font-weight:600;margin-bottom:20px}
+.tag span{color:var(--coral)}
+.hero h1{font-family:'Playfair Display','Hind Siliguri',serif;font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.1;font-weight:900;letter-spacing:-1px}
+.hero h1 em{color:var(--coral);font-style:italic}
+.hero p{color:var(--muted);font-size:1.12rem;margin:20px 0 28px;max-width:480px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.stats{display:flex;gap:34px;margin-top:38px}
+.stats b{display:block;font-size:1.7rem;font-family:'Playfair Display',serif}
+.stats small{color:var(--muted)}
+.hero-art{position:relative;height:440px}
+.blob{position:absolute;inset:20px 10px;background:var(--coral);border-radius:46% 54% 40% 60%/55% 45% 55% 45%;animation:morph 9s ease-in-out infinite}
+@keyframes morph{50%{border-radius:60% 40% 55% 45%/40% 60% 40% 60%}}
+.hero-art svg{position:absolute;filter:drop-shadow(0 18px 24px rgba(0,0,0,.25))}
+.blob-copy{position:absolute;z-index:4;left:50%;bottom:2%;transform:translateX(-50%);width:max-content;max-width:92%;background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;text-align:center;font-weight:700;font-size:1rem;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.s1{width:62%;left:6%;top:6%;transform:rotate(-8deg);animation:float 5s ease-in-out infinite}
+.s2{width:52%;right:2%;bottom:2%;transform:rotate(9deg);animation:float 6s ease-in-out infinite reverse}
+@keyframes float{50%{translate:0 -14px}}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}.hero-art{height:340px}}
+
+/* marquee */
+.marquee{background:var(--ink);color:var(--cream);overflow:hidden;padding:14px 0;border-block:3px solid var(--coral)}
+.marquee div{display:flex;gap:50px;white-space:nowrap;animation:scroll 22s linear infinite;width:max-content;font-family:'Playfair Display',serif;font-size:1.25rem;font-style:italic}
+.marquee span::after{content:"✦";color:var(--coral);margin-left:50px}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* sections */
+section{padding:72px 0}
+.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:34px;gap:16px;flex-wrap:wrap}
+.head h2{font-family:'Playfair Display','Hind Siliguri',serif;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.15}
+.head h2 em{color:var(--coral)}
+.head p{color:var(--muted);max-width:340px}
+
+/* products */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:24px}
+.card{background:var(--white);border-radius:22px;overflow:hidden;transition:.3s;border:1px solid var(--sand)}
+.card:hover{transform:translateY(-8px);box-shadow:0 22px 40px -18px rgba(0,0,0,.28)}
+.pic{height:270px;display:flex;align-items:center;justify-content:center;position:relative}
+.pic svg{width:62%;transition:.4s}
+.card:hover .pic svg{transform:scale(1.08) rotate(-3deg)}
+.pic .new{position:absolute;left:14px;top:14px;background:var(--ink);color:var(--cream);font-size:.75rem;padding:3px 12px;border-radius:999px;font-weight:600}
+.info{padding:18px 20px 22px}
+.info h3{font-size:1.1rem}
+.info .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.price{font-family:'Playfair Display',serif;font-weight:900;font-size:1.5rem}
+.price s{font-size:.9rem;color:var(--muted);font-weight:400;margin-left:6px}
+.add{background:var(--ink);color:var(--cream);border:none;padding:9px 18px;border-radius:999px;cursor:pointer;font-family:inherit;font-weight:600;transition:.2s}
+.add:hover{background:var(--coral)}
+
+/* why */
+.why{background:var(--ink);color:var(--cream)}
+.why .head p{color:#aaa49a}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}
+.f{border:1px solid #333;border-radius:20px;padding:26px;transition:.3s}
+.f:hover{border-color:var(--coral);background:#1c1c1c}
+.f .ic{font-size:2rem;margin-bottom:10px}
+.f h3{margin-bottom:4px}
+.f p{color:#aaa49a;font-size:.95rem}
+
+/* delivery */
+.del{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:760px}
+.dbox{background:var(--white);border-radius:22px;padding:30px;border:2px dashed var(--ink);position:relative}
+.dbox b{font-family:'Playfair Display',serif;font-size:3rem;color:var(--coral);line-height:1}
+.dbox p{margin-top:6px;font-weight:600}
+
+/* order */
+.order-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.steps{list-style:none;counter-reset:s}
+.steps li{counter-increment:s;display:flex;gap:16px;margin-bottom:22px}
+.steps li::before{content:counter(s);flex:none;width:44px;height:44px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Playfair Display',serif;font-size:1.2rem}
+.steps h4{font-size:1.1rem}
+.steps p{color:var(--muted);font-size:.95rem}
+form{background:var(--white);border-radius:24px;padding:30px;border:1px solid var(--sand);box-shadow:0 20px 50px -30px rgba(0,0,0,.35)}
+label{display:block;font-size:.88rem;font-weight:600;margin:14px 0 5px}
+input,select,textarea{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--sand);background:var(--cream);font-size:1rem;font-family:inherit;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--coral);background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sum{margin:20px 0;background:var(--cream);border-radius:14px;padding:16px}
+.sum div{display:flex;justify-content:space-between;padding:3px 0}
+.sum .t{border-top:1.5px dashed #bbb;margin-top:8px;padding-top:10px;font-weight:700;font-size:1.2rem}
+.sum .t span:last-child{color:var(--coral);font-family:'Playfair Display',serif;font-size:1.5rem}
+form .pill{width:100%;padding:15px;font-size:1.08rem}
+@media(max-width:860px){.order-wrap{grid-template-columns:1fr}}
+@media(max-width:480px){.two{grid-template-columns:1fr}}
+
+/* contact */
+.contact{background:var(--coral);color:#fff;text-align:center;border-radius:32px;padding:56px 24px;margin-bottom:60px}
+.contact h2{font-family:'Playfair Display','Hind Siliguri',serif;font-size:clamp(1.8rem,4vw,2.6rem)}
+.contact p{margin:10px 0 26px;opacity:.92}
+.contact .cta{justify-content:center}
+.contact .pill.line{border-color:#fff;color:#fff}
+.contact .pill.line:hover{background:#fff;color:var(--coral)}
+
+footer{background:var(--ink);color:#aaa49a;text-align:center;padding:28px 10px;font-size:.9rem}
+footer b{color:var(--cream)}
+
+.float{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--green);color:#fff;padding:13px 20px;border-radius:999px;font-weight:700;box-shadow:0 10px 26px rgba(0,0,0,.35);display:flex;gap:8px;align-items:center;animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,170,89,.6)}70%{box-shadow:0 0 0 18px rgba(31,170,89,0)}100%{box-shadow:0 0 0 0 rgba(31,170,89,0)}}
+</style>
+</head>
+<body>
+
+<div class="strip">🔥 নতুন কালেকশন · সহজে অর্ডার করুন · ঢাকায় ডেলিভারি ৭০ টাকা</div>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="logo">Orpon <i>Aura</i> Fashion</a>
+    <nav class="menu">
+      <a href="#products">কালেকশন</a>
+      <a href="#why">কেন আমরা</a>
+      <a href="#delivery">ডেলিভারি</a>
+      <a href="#order">অর্ডার</a>
+    </nav>
+    <a class="pill green" id="navWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="tag"><span>●</span> নতুন কালেকশন এসেছে</span>
+      <h1>তোমার স্টাইলে<br>জ্বলে উঠুক <em>আউরা</em></h1>
+      <p>আরামদায়ক কাপড়, নিখুঁত ফিটিং আর চোখ-ধাঁধানো রং। পছন্দের ডিজাইন বেছে নিয়ে ঘরে বসেই অর্ডার করুন।</p>
+      <div class="cta">
+        <a href="#products" class="pill">কালেকশন দেখুন</a>
+        <a href="#order" class="pill line">এখনই অর্ডার করুন</a>
+      </div>
+      <div class="stats">
+        <div><b>নতুন</b><small>প্রিমিয়াম কালেকশন</small></div>
+        <div><b>৬৪</b><small>জেলায় ডেলিভারি</small></div>
+        <div><b>১০০%</b><small>প্রিমিয়াম কোয়ালিটি</small></div>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="blob"></div>
+      <svg class="s1" viewBox="0 0 100 100" id="h1"></svg>
+      <svg class="s2" viewBox="0 0 100 100" id="h2"></svg>
+      <div class="blob-copy">সেরা প্রোডাক্ট শুধু আমাদের কাছেই পাবেন</div>
+    </div>
+  </div>
+</div>
+
+<div class="marquee"><div id="mq"></div></div>
+
+<section id="products">
+  <div class="wrap">
+    <div class="head">
+      <h2>আমাদের <em>কালেকশন</em></h2>
+      <p>পছন্দের প্রোডাক্ট বেছে নিন। টি-শার্ট, প্যান্ট ও জুতার নতুন কালেকশন দেখুন।</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="head">
+      <h2>কেন <em style="color:var(--coral)">Orpon Aura</em>?</h2>
+      <p>স্টাইল আর আরাম — দুটোই একসাথে।</p>
+    </div>
+    <div class="feat">
+      <div class="f"><div class="ic">🧵</div><h3>প্রিমিয়াম কোয়ালিটি</h3><p>নরম, আরামদায়ক ও টেকসই উপাদান।</p></div>
+      <div class="f"><div class="ic">🎨</div><h3>আকর্ষণীয় ডিজাইন</h3><p>ট্রেন্ডি স্টাইলের বিশাল কালেকশন।</p></div>
+      <div class="f"><div class="ic">💰</div><h3>সাশ্রয়ী দাম</h3><p>পছন্দের ডিজাইন বেছে নিন আপনার বাজেট অনুযায়ী।</p></div>
+      <div class="f"><div class="ic">🚚</div><h3>দ্রুত ডেলিভারি</h3><p>সারা বাংলাদেশে হোম ডেলিভারি।</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="delivery">
+  <div class="wrap">
+    <div class="head">
+      <h2>ডেলিভারি <em>চার্জ</em></h2>
+      <p>আপনার এলাকা অনুযায়ী চার্জ।</p>
+    </div>
+    <div class="del">
+      <div class="dbox"><b>৭০৳</b><p>ঢাকার ভিতরে</p></div>
+      <div class="dbox"><b>১৩০৳</b><p>ঢাকার বাইরে</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="order">
+  <div class="wrap">
+    <div class="head">
+      <h2>অর্ডার <em>করুন</em></h2>
+      <p>ফর্ম পূরণ করলে অর্ডার ওয়েবসাইটে জমা হবে। আমরা Admin Panel থেকে দেখে ফোনে আপনার সঙ্গে যোগাযোগ করে অর্ডার কনফার্ম করব।</p>
+    </div>
+    <div class="order-wrap">
+      <ol class="steps">
+        <li><div><h4>প্রোডাক্ট বাছুন</h4><p>পছন্দের প্রোডাক্ট ও সঠিক সাইজ সিলেক্ট করুন।</p></div></li>
+        <li><div><h4>তথ্য দিন</h4><p>নাম, মোবাইল নাম্বার ও ঠিকানা লিখুন।</p></div></li>
+        <li><div><h4>ওয়েবসাইটে অর্ডার জমা</h4><p>আপনার অর্ডার নিরাপদে আমাদের অর্ডার তালিকায় জমা হবে।</p></div></li>
+        <li><div><h4>ঘরে বসে পান</h4><p>আমরা কনফার্ম করে দ্রুত ডেলিভারি দেব।</p></div></li>
+      </ol>
+      <form id="orderForm">
+        <label>প্রোডাক্ট টাইপ (ক্যাটাগরি)</label>
+        <select id="itemCategory">
+          <option value="tshirt">টি-শার্ট (T-Shirt)</option>
+          <option value="pant">প্যান্ট (Pant)</option>
+          <option value="shoe">জুতা (Shoe)</option>
+        </select>
+        <label>প্রোডাক্ট সিলেক্ট করুন</label>
+        <select id="product"></select>
+        <div class="two">
+          <div><label id="sizeLabel">সাইজ</label><select id="size"></select></div>
+          <div><label>পরিমাণ</label><input type="number" id="qty" min="1" max="50" value="1"></div>
+        </div>
+        <label>আপনার নাম</label>
+        <input type="text" id="name" required placeholder="পুরো নাম">
+        <label>মোবাইল নাম্বার</label>
+        <input type="tel" id="phone" required placeholder="01XXXXXXXXX" pattern="01[0-9]{9}">
+        <label>ডেলিভারি এলাকা</label>
+        <select id="area">
+          <option value="70">ঢাকার ভিতরে (৭০ টাকা)</option>
+          <option value="130">ঢাকার বাইরে (১৩০ টাকা)</option>
+        </select>
+        <label>সম্পূর্ণ ঠিকানা</label>
+        <textarea id="address" rows="3" required placeholder="বাসা/রোড, থানা, জেলা"></textarea>
+        <div class="sum">
+          <div><span>প্রোডাক্টের দাম</span><span id="sItems"></span></div>
+          <div><span>ডেলিভারি চার্জ</span><span id="sDel"></span></div>
+          <div class="t"><span>সর্বমোট</span><span id="sTotal"></span></div>
+        </div>
+        <button class="pill green" type="submit">অর্ডার জমা দিন</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="contact" id="contact">
+    <h2>কিছু জানতে চান?</h2>
+    <p>সরাসরি মেসেজ দিন, আমরা দ্রুত উত্তর দেব।</p>
+    <div class="cta">
+      <a class="pill green" id="waBtn" href="#" target="_blank" rel="noopener">💬 ০১৭৩৮৮৮২৪৬৮</a>
+      <a class="pill line" href="mailto:raorpon23@gmail.com">✉ raorpon23@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 <b>Orpon Aura Fashion</b> · সর্বস্বত্ব সংরক্ষিত</footer>
+
+<a class="float" id="floatWa" href="#" target="_blank" rel="noopener">💬 WhatsApp এ মেসেজ দিন</a>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAVz2l2GJ_Qcd5FschRCi3jUpDYtlNEHuY",
+  authDomain: "orpon-aura-fashion.firebaseapp.com",
+  projectId: "orpon-aura-fashion",
+  storageBucket: "orpon-aura-fashion.firebasestorage.app",
+  messagingSenderId: "922327604021",
+  appId: "1:922327604021:web:f360e1ff05de7dd86e8a7c",
+  measurementId: "G-JRNJ19FESH"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const WA = "8801738882468";
+const waLink = m => "https://wa.me/" + WA + (m ? "?text=" + encodeURIComponent(m) : "");
+const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+const shirt = c => `<path d="M32 12 L8 27 L19 44 L28 38 L28 90 L72 90 L72 38 L81 44 L92 27 L68 12 C63 22 37 22 32 12Z" fill="${c}" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/><path d="M32 12 C37 22 63 22 68 12" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.6"/>`;
+const shirtSvg = c => `<svg viewBox="0 0 100 100">${shirt(c)}</svg>`;
+document.getElementById("h1").innerHTML = shirt("#1b1b1b");
+document.getElementById("h2").innerHTML = shirt("#fafafa");
+const words = ["Orpon Aura Fashion","প্রিমিয়াম কালেকশন","সারা বাংলাদেশে ডেলিভারি"];
+const mq = words.map(w => `<span>${w}</span>`).join("");
+document.getElementById("mq").innerHTML = mq + mq + mq + mq;
+
+const sizeOptions = {
+  tshirt: ["M", "L", "XL", "XXL"],
+  pant: ["28", "30", "32", "34", "36", "38"],
+  shoe: ["39", "40", "41", "42", "43", "44"]
+};
+
+const grid = document.getElementById("grid"), 
+      sel = document.getElementById("product"), 
+      sizeSel = document.getElementById("size"),
+      itemCategorySel = document.getElementById("itemCategory");
+
+let products = [];
+let filteredProducts = [];
+
+function updateSizes() {
+  const cat = itemCategorySel.value;
+  const sizes = sizeOptions[cat] || sizeOptions.tshirt;
+  sizeSel.innerHTML = "";
+  sizes.forEach(sz => {
+    sizeSel.insertAdjacentHTML("beforeend", `<option value="${sz}">${sz}</option>`);
+  });
+}
+
+function updateProductDropdown() {
+  const cat = itemCategorySel.value;
+  filteredProducts = products.filter(p => (p.category || "tshirt").toLowerCase() === cat);
+  
+  sel.innerHTML = "";
+  if (filteredProducts.length > 0) {
+    filteredProducts.forEach((p, i) => {
+      sel.insertAdjacentHTML("beforeend", `<option value="${i}">${p.name}</option>`);
+    });
+  } else {
+    // If no Firebase product matches this category, create fallback items
+    if(cat === 'tshirt') {
+      sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম টি-শার্ট (Standard)</option>`);
+      filteredProducts = [{ id: 'default_tshirt', name: 'প্রিমিয়াম টি-শার্ট (Standard)', price: 450, category: 'tshirt' }];
+    } else if(cat === 'pant') {
+      sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম প্যান্ট (Standard)</option>`);
+      filteredProducts = [{ id: 'default_pant', name: 'প্রিমিয়াম প্যান্ট (Standard)', price: 750, category: 'pant' }];
+    } else if(cat === 'shoe') {
+      sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম জুতা (Standard)</option>`);
+      filteredProducts = [{ id: 'default_shoe', name: 'প্রিমিয়াম জুতা (Standard)', price: 1200, category: 'shoe' }];
+    }
+  }
+  updateSizes();
+  calc();
+}
+
+function renderProducts(){
+  grid.innerHTML = "";
+  if (!products.length) {
+    grid.innerHTML = '<p>নতুন কালেকশন শিগগিরই যোগ করা হবে।</p>';
+    return;
+  }
+  products.forEach((p,i) => {
+    const price = Number(p.price || 0);
+    const visual = p.imageUrl
+      ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover">`
+      : shirtSvg(p.color || "#1b1b1b");
+    grid.insertAdjacentHTML("beforeend",
+      `<div class="card"><div class="pic" style="background:${p.bg || '#e6dfd2'}">${p.isNew?'<span class="new">নতুন</span>':''}${visual}</div>
+       <div class="info"><h3>${p.name}</h3><div class="row"><div class="price">${bn(price)}৳</div><button class="add" data-pick="${i}">অর্ডার</button></div></div></div>`);
+  });
+  grid.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => pick(Number(b.dataset.pick))));
+}
+
+async function loadProducts(){
+  try {
+    const snap = await getDocs(collection(db,"products"));
+    products = snap.docs.map(d => ({id:d.id,...d.data()})).filter(p => p.active !== false);
+    renderProducts();
+  } catch(err) {
+    console.error(err);
+    grid.innerHTML = '<p>প্রোডাক্ট লোড করা যাচ্ছে না। Firebase সেটআপ পরীক্ষা করুন।</p>';
+  }
+  updateProductDropdown();
+}
+
+function pick(i){ 
+  const p = products[i];
+  if (p) {
+    const cat = (p.category || "tshirt").toLowerCase();
+    itemCategorySel.value = cat;
+    updateProductDropdown();
+    
+    const idx = filteredProducts.findIndex(item => item.id === p.id);
+    if (idx !== -1) sel.value = String(idx);
+  }
+  calc();
+  document.getElementById("order").scrollIntoView({behavior:"smooth"}); 
+}
+
+const qty = document.getElementById("qty"), area = document.getElementById("area");
+function calc(){
+  const q = Math.max(1, parseInt(qty.value) || 1);
+  const p = filteredProducts[Number(sel.value)] || filteredProducts[0];
+  const unit = Number(p?.price || 0);
+  const items = q * unit, del = parseInt(area.value);
+  document.getElementById("sItems").textContent = bn(items) + " ৳";
+  document.getElementById("sDel").textContent = bn(del) + " ৳";
+  document.getElementById("sTotal").textContent = bn(items + del) + " ৳";
+  return {q, items, del, total: items + del, unit};
+}
+
+qty.addEventListener("input", calc); 
+area.addEventListener("change", calc);
+itemCategorySel.addEventListener("change", updateProductDropdown);
+sel.addEventListener("change", calc);
+
+await loadProducts(); 
+calc();
+
+document.getElementById("orderForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const p = filteredProducts[Number(sel.value)] || filteredProducts[0];
+  if (!p) return alert("অনুগ্রহ করে একটি প্রোডাক্ট নির্বাচন করুন।");
+  const c = calc();
+  const order = {
+    productId: p.id, 
+    productName: p.name, 
+    category: itemCategorySel.value,
+    size: sizeSel.value,
+    quantity: c.q, 
+    unitPrice: c.unit, 
+    itemTotal: c.items, 
+    delivery: c.del, 
+    total: c.total,
+    customerName: document.getElementById("name").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    area: document.getElementById("area").options[document.getElementById("area").selectedIndex].text,
+    address: document.getElementById("address").value.trim(),
+    status: "নতুন", 
+    createdAt: serverTimestamp()
+  };
+  try {
+    await addDoc(collection(db,"orders"), order);
+    alert("আপনার অর্ডার সফলভাবে জমা হয়েছে! আমাদের প্রতিনিধি ফোন করে অর্ডারটি কনফার্ম করবেন। ধন্যবাদ।");
+    e.target.reset(); 
+    updateProductDropdown();
+  } catch(err) {
+    console.error(err);
+    alert("অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ বা Firebase সেটআপ পরীক্ষা করে আবার চেষ্টা করুন।");
+  }
+});
+
+const hello = "আসসালামু আলাইকুম, আমি Orpon Aura Fashion থেকে প্রোডাক্ট সম্পর্কে জানতে চাই।";
+["navWa","waBtn","floatWa"].forEach(id => document.getElementById(id).href = waLink(hello));
+</script>
+</body>
+</html>
