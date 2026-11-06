@@ -9,6 +9,7 @@ h1{margin:0 0 8px}.muted{color:#6b665e}input,select,button{font:inherit;padding:
 button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.danger{background:#a52626}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .item{display:flex;align-items:center;gap:14px;border-top:1px solid #eee;padding:12px 0}.item img{width:64px;height:64px;object-fit:cover;border-radius:8px}
 .item button{width:auto;padding:8px 12px}.hidden{display:none}.order{border-top:1px solid #eee;padding:12px 0;overflow-wrap:anywhere}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600;background:#e2e8f0;color:#334155;margin-left:6px}
 @media(max-width:600px){.row{grid-template-columns:1fr}.wrap{padding:12px}}
 </style></head><body><main class="wrap">
 <h1>ORPON AURA FASHION</h1><p class="muted">Admin Dashboard · শুধু অনুমোদিত Admin ব্যবহার করতে পারবেন</p>
@@ -16,10 +17,23 @@ button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.d
 <section id="panel" class="hidden">
 <div class="box"><div class="row"><h2>প্রোডাক্ট ম্যানেজমেন্ট</h2><button id="logoutBtn">লগআউট</button></div>
 <form id="productForm">
-<input id="pname" required placeholder="T-shirt-এর নাম">
+<div class="row">
+<div>
+<label>প্রোডাক্টের ক্যাটাগরি</label>
+<select id="category">
+<option value="T-shirt">T-shirt</option>
+<option value="Pants">Pants</option>
+<option value="Shoes">Shoes</option>
+</select>
+</div>
+<div>
+<label>প্রোডাক্টের নাম</label>
+<input id="pname" required placeholder="যেমন: Black Oversized T-shirt / Denim Pants">
+</div>
+</div>
 <div class="row"><input id="price" type="number" min="1" required placeholder="দাম (টাকা)"><input id="stock" type="number" min="0" placeholder="স্টক"></div>
-<label>প্রোডাক্ট ছবির লিংক (Image URL)</label><input id="imageUrl" type="url" placeholder="https://example.com/tshirt.jpg">
-<input id="color" placeholder="ছবি না থাকলে T-shirt রং (যেমন #1b1b1b)">
+<label>প্রোডাক্ট ছবির লিংক (Image URL)</label><input id="imageUrl" type="url" placeholder="https://example.com/product.jpg">
+<input id="color" placeholder="ছবি না থাকলে রং/কালার (যেমন #1b1b1b)">
 <button type="submit" id="saveProductBtn">প্রোডাক্ট যোগ করুন</button>
 <button type="button" id="cancelEditBtn" class="hidden">এডিট বাতিল</button>
 <p id="productMsg" class="muted"></p>
@@ -54,13 +68,20 @@ async function loadProducts(){
  const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
  snap.forEach(d=>{
   const p=d.data(),el=document.createElement("div");el.className="item";
-  el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:""}<div style="flex:1"><b></b><br><small></small></div><button type="button" class="editBtn">এডিট</button><button type="button" class="danger deleteBtn">ডিলিট</button>`;
+  el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:""}<div style="flex:1"><b></b> <span class="badge"></span><br><small></small></div><button type="button" class="editBtn">এডিট</button><button type="button" class="danger deleteBtn">ডিলিট</button>`;
   el.querySelector("b").textContent=p.name;
+  el.querySelector(".badge").textContent=p.category||"T-shirt";
   el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??0}`;
   el.querySelector(".editBtn").onclick=()=>{
-   editingId=d.id;$("pname").value=p.name||"";$("price").value=p.price||"";$("stock").value=p.stock??0;
-   $("imageUrl").value=p.imageUrl||"";$("color").value=p.color||"#1b1b1b";
-   $("saveProductBtn").textContent="পরিবর্তন সংরক্ষণ";$("cancelEditBtn").classList.remove("hidden");
+   editingId=d.id;
+   $("category").value=p.category||"T-shirt";
+   $("pname").value=p.name||"";
+   $("price").value=p.price||"";
+   $("stock").value=p.stock??0;
+   $("imageUrl").value=p.imageUrl||"";
+   $("color").value=p.color||"#1b1b1b";
+   $("saveProductBtn").textContent="পরিবর্তন সংরক্ষণ";
+   $("cancelEditBtn").classList.remove("hidden");
    $("productMsg").textContent="এখন তথ্য পরিবর্তন করে সংরক্ষণ করুন।";
    $("productForm").scrollIntoView({behavior:"smooth"});
   };
@@ -76,8 +97,16 @@ $("cancelEditBtn").onclick=resetProductForm;
 $("productForm").onsubmit=async e=>{
  e.preventDefault();
  try{
-  const data={name:$("pname").value.trim(),price:Number($("price").value),stock:Number($("stock").value||0),
-   color:$("color").value||"#1b1b1b",imageUrl:$("imageUrl").value.trim(),active:true,updatedAt:new Date()};
+  const data={
+   category:$("category").value,
+   name:$("pname").value.trim(),
+   price:Number($("price").value),
+   stock:Number($("stock").value||0),
+   color:$("color").value||"#1b1b1b",
+   imageUrl:$("imageUrl").value.trim(),
+   active:true,
+   updatedAt:new Date()
+  };
   if(editingId){await updateDoc(doc(db,"products",editingId),data);}
   else{data.createdAt=new Date();await addDoc(collection(db,"products"),data);}
   resetProductForm();$("productMsg").textContent="প্রোডাক্টের তথ্য সংরক্ষণ হয়েছে।";await loadProducts();
