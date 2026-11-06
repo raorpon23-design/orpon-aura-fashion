@@ -235,9 +235,9 @@ footer b{color:var(--cream)}
       <form id="orderForm">
         <label>প্রোডাক্ট টাইপ (ক্যাটাগরি)</label>
         <select id="itemCategory">
-          <option value="tshirt">টি-শার্ট (T-Shirt)</option>
-          <option value="pant">প্যান্ট (Pant)</option>
-          <option value="shoe">জুতা (Shoe)</option>
+          <option value="tshirt">টি-শার্ট (T-shirt)</option>
+          <option value="pant">প্যান্ট (Pants)</option>
+          <option value="shoe">জুতা (Shoes)</option>
         </select>
         <label>প্রোডাক্ট সিলেক্ট করুন</label>
         <select id="product"></select>
@@ -314,6 +314,16 @@ const sizeOptions = {
   shoe: ["39", "40", "41", "42", "43", "44"]
 };
 
+// Map normalized category keys to display strings / aliases
+function normalizeCat(catStr) {
+  if (!catStr) return "tshirt";
+  const c = catStr.toString().toLowerCase().trim();
+  if (c.includes("t-shirt") || c.includes("tshirt") || c.includes("shirt") || c.includes("টি-শার্ট")) return "tshirt";
+  if (c.includes("pant") || c.includes("প্যান্ট")) return "pant";
+  if (c.includes("shoe") || c.includes("জুতা")) return "shoe";
+  return "tshirt";
+}
+
 const grid = document.getElementById("grid"), 
       sel = document.getElementById("product"), 
       sizeSel = document.getElementById("size"),
@@ -323,8 +333,8 @@ let products = [];
 let filteredProducts = [];
 
 function updateSizes() {
-  const cat = itemCategorySel.value;
-  const sizes = sizeOptions[cat] || sizeOptions.tshirt;
+  const catKey = normalizeCat(itemCategorySel.value);
+  const sizes = sizeOptions[catKey] || sizeOptions.tshirt;
   sizeSel.innerHTML = "";
   sizes.forEach(sz => {
     sizeSel.insertAdjacentHTML("beforeend", `<option value="${sz}">${sz}</option>`);
@@ -332,23 +342,23 @@ function updateSizes() {
 }
 
 function updateProductDropdown() {
-  const cat = itemCategorySel.value;
-  filteredProducts = products.filter(p => (p.category || "tshirt").toLowerCase() === cat);
+  const catKey = normalizeCat(itemCategorySel.value);
+  filteredProducts = products.filter(p => normalizeCat(p.category) === catKey);
   
   sel.innerHTML = "";
   if (filteredProducts.length > 0) {
     filteredProducts.forEach((p, i) => {
-      sel.insertAdjacentHTML("beforeend", `<option value="${i}">${p.name}</option>`);
+      sel.insertAdjacentHTML("beforeend", `<option value="${i}">${p.name} - ${bn(p.price)}৳</option>`);
     });
   } else {
-    // If no Firebase product matches this category, create fallback items
-    if(cat === 'tshirt') {
+    // Fallback options if no products found in Firebase for selected category
+    if(catKey === 'tshirt') {
       sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম টি-শার্ট (Standard)</option>`);
       filteredProducts = [{ id: 'default_tshirt', name: 'প্রিমিয়াম টি-শার্ট (Standard)', price: 450, category: 'tshirt' }];
-    } else if(cat === 'pant') {
+    } else if(catKey === 'pant') {
       sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম প্যান্ট (Standard)</option>`);
       filteredProducts = [{ id: 'default_pant', name: 'প্রিমিয়াম প্যান্ট (Standard)', price: 750, category: 'pant' }];
-    } else if(cat === 'shoe') {
+    } else if(catKey === 'shoe') {
       sel.insertAdjacentHTML("beforeend", `<option value="0">প্রিমিয়াম জুতা (Standard)</option>`);
       filteredProducts = [{ id: 'default_shoe', name: 'প্রিমিয়াম জুতা (Standard)', price: 1200, category: 'shoe' }];
     }
@@ -390,8 +400,8 @@ async function loadProducts(){
 function pick(i){ 
   const p = products[i];
   if (p) {
-    const cat = (p.category || "tshirt").toLowerCase();
-    itemCategorySel.value = cat;
+    const catKey = normalizeCat(p.category);
+    itemCategorySel.value = catKey;
     updateProductDropdown();
     
     const idx = filteredProducts.findIndex(item => item.id === p.id);
@@ -450,7 +460,7 @@ document.getElementById("orderForm").addEventListener("submit", async e => {
     updateProductDropdown();
   } catch(err) {
     console.error(err);
-    alert("অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ বা Firebase সেটআপ পরীক্ষা করে আবার চেষ্টা করুন।");
+    alert("অর্ডার জমা হয়নি। ইন্টারনেট সংযোগ বা Firebase সেটআপ পরীক্ষা করুন।");
   }
 });
 
