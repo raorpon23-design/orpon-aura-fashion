@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin | Orpon Aura Fashion</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f1e9;color:#141414;font-family:'Hind Siliguri',sans-serif}
+.wrap{max-width:980px;margin:30px auto;padding:20px}.box{background:white;border:1px solid #e9e0d1;border-radius:18px;padding:22px;margin:16px 0}
+h1{margin:0 0 8px}.muted{color:#6b665e}input,select,button{font:inherit;padding:12px;border:1px solid #ddd;border-radius:10px;width:100%;margin:6px 0}
+button{background:#141414;color:white;border:0;cursor:pointer;font-weight:700}.danger{background:#a52626}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{display:flex;align-items:center;gap:14px;border-top:1px solid #eee;padding:12px 0}.item img{width:64px;height:64px;object-fit:cover;border-radius:8px}
+.item button{width:auto;padding:8px 12px}.hidden{display:none}.order{border-top:1px solid #eee;padding:12px 0;overflow-wrap:anywhere}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600;background:#e2e8f0;color:#334155;margin-left:6px}
+@media(max-width:600px){.row{grid-template-columns:1fr}.wrap{padding:12px}}
+</style></head><body><main class="wrap">
+<h1>ORPON AURA FASHION</h1><p class="muted">Admin Dashboard · শুধু অনুমোদিত Admin ব্যবহার করতে পারবেন</p>
+<section id="login" class="box"><h2>Admin Login</h2><input id="email" type="email" placeholder="Admin email"><input id="password" type="password" placeholder="Password"><button id="loginBtn">লগইন</button><p id="loginMsg" class="muted"></p></section>
+<section id="panel" class="hidden">
+<div class="box"><div class="row"><h2>প্রোডাক্ট ম্যানেজমেন্ট</h2><button id="logoutBtn">লগআউট</button></div>
+<form id="productForm">
+<div class="row">
+<div>
+<label>প্রোডাক্টের ক্যাটাগরি</label>
+<select id="category">
+<option value="T-shirt">T-shirt</option>
+<option value="Pants">Pants</option>
+<option value="Shoes">Shoes</option>
+</select>
+</div>
+<div>
+<label>প্রোডাক্টের নাম</label>
+<input id="pname" required placeholder="যেমন: Black Oversized T-shirt / Denim Pants">
+</div>
+</div>
+<div class="row"><input id="price" type="number" min="1" required placeholder="দাম (টাকা)"><input id="stock" type="number" min="0" placeholder="স্টক"></div>
+<label>প্রোডাক্ট ছবির লিংক (Image URL)</label><input id="imageUrl" type="url" placeholder="https://example.com/product.jpg">
+<input id="color" placeholder="ছবি না থাকলে রং/কালার (যেমন #1b1b1b)">
+<button type="submit" id="saveProductBtn">প্রোডাক্ট যোগ করুন</button>
+<button type="button" id="cancelEditBtn" class="hidden">এডিট বাতিল</button>
+<p id="productMsg" class="muted"></p>
+</form><div id="products"></div></div>
+<div class="box"><h2>কাস্টমার অর্ডার</h2><div id="orders">লোড হচ্ছে...</div></div>
+</section></main>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import {getFirestore,collection,addDoc,getDocs,doc,deleteDoc,updateDoc,query,orderBy,getDoc} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyAVz2l2GJ_Qcd5FschRCi3jUpDYtlNEHuY",
+  authDomain: "orpon-aura-fashion.firebaseapp.com",
+  projectId: "orpon-aura-fashion",
+  storageBucket: "orpon-aura-fashion.firebasestorage.app",
+  messagingSenderId: "922327604021",
+  appId: "1:922327604021:web:f360e1ff05de7dd86e8a7c",
+  measurementId: "G-JRNJ19FESH"
+};
+const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
+let editingId=null;
+const $=id=>document.getElementById(id);
+
+$("loginBtn").onclick=async()=>{
+  try {
+    $("loginMsg").textContent = "লগইন হচ্ছে...";
+    await signInWithEmailAndPassword(auth, $("email").value, $("password").value);
+    $("loginMsg").textContent="";
+  } catch(e) {
+    console.error(e);
+    $("loginMsg").textContent = "লগইন হয়নি: " + e.message;
+  }
+};
+
+$("logoutBtn").onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async user=>{
+ if(!user){
+   $("login").classList.remove("hidden");
+   $("panel").classList.add("hidden");
+   return;
+ }
+ try {
+   const roleRef = doc(db, "admins", user.uid);
+   const role = await getDoc(roleRef);
+   
+   if(!role.exists() || role.data().active !== true){
+     await signOut(auth);
+     $("loginMsg").textContent = `লগইন ব্যর্থ! আপনার UID (${user.uid})-এর জন্য 'admins' কালেকশনে কোনো অ্যাক্টিভ ডকুমেন্ট নেই।`;
+     return;
+   }
+   
+   $("login").classList.add("hidden");
+   $("panel").classList.remove("hidden");
+   await loadProducts();
+   await loadOrders();
+ } catch(err) {
+   console.error(err);
+   $("loginMsg").textContent = "রোল চেক করতে সমস্যা হয়েছে: " + err.message;
+ }
+});
+
+async function loadProducts(){
+ const snap=await getDocs(collection(db,"products"));$("products").innerHTML="";
+ snap.forEach(d=>{
+  const p=d.data(),el=document.createElement("div");el.className="item";
+  el.innerHTML=`${p.imageUrl?`<img src="${p.imageUrl}" alt="">`:""}<div style="flex:1"><b></b> <span class="badge"></span><br><small></small></div><button type="button" class="editBtn">এডিট</button><button type="button" class="danger deleteBtn">ডিলিট</button>`;
+  el.querySelector("b").textContent=p.name;
+  el.querySelector(".badge").textContent=p.category||"T-shirt";
+  el.querySelector("small").textContent=`৳${p.price} · স্টক ${p.stock??0}`;
+  el.querySelector(".editBtn").onclick=()=>{
+   editingId=d.id;
+   $("category").value=p.category||"T-shirt";
+   $("pname").value=p.name||"";
+   $("price").value=p.price||"";
+   $("stock").value=p.stock??0;
+   $("imageUrl").value=p.imageUrl||"";
+   $("color").value=p.color||"#1b1b1b";
+   $("saveProductBtn").textContent="পরিবর্তন সংরক্ষণ";
+   $("cancelEditBtn").classList.remove("hidden");
+   $("productMsg").textContent="এখন তথ্য পরিবর্তন করে সংরক্ষণ করুন।";
+   $("productForm").scrollIntoView({behavior:"smooth"});
+  };
+  el.querySelector(".deleteBtn").onclick=async()=>{if(confirm("এই প্রোডাক্ট মুছবেন?")){await deleteDoc(doc(db,"products",d.id));await loadProducts();}};
+  $("products").append(el);
+ });
+}
+
+function resetProductForm(){
+ editingId=null;$("productForm").reset();$("saveProductBtn").textContent="প্রোডাক্ট যোগ করুন";
+ $("cancelEditBtn").classList.add("hidden");
+}
+
+$("cancelEditBtn").onclick=resetProductForm;
+
+$("productForm").onsubmit=async e=>{
+ e.preventDefault();
+ try{
+  const data={
+   category:$("category").value,
+   name:$("pname").value.trim(),
+   price:Number($("price").value),
+   stock:Number($("stock").value||0),
+   color:$("color").value||"#1b1b1b",
+   imageUrl:$("imageUrl").value.trim(),
+   active:true,
+   updatedAt:new Date()
+  };
+  if(editingId){await updateDoc(doc(db,"products",editingId),data);}
+  else{data.createdAt=new Date();await addDoc(collection(db,"products"),data);}
+  resetProductForm();$("productMsg").textContent="প্রোডাক্টের তথ্য সংরক্ষণ হয়েছে।";await loadProducts();
+ }catch(err){console.error(err);$("productMsg").textContent="সংরক্ষণ হয়নি। Firestore Rules ও সেটআপ পরীক্ষা করুন।";}
+};
+
+async function loadOrders(){
+ const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));
+ $("orders").innerHTML="";
+ snap.forEach(d=>{
+  const o=d.data(),el=document.createElement("div");el.className="order";
+  const title=document.createElement("b");
+  title.textContent=`${o.productName} · ${o.total} টাকা · ${o.status||"নতুন"}`;
+  const detail=document.createElement("p");
+  detail.textContent=`কাস্টমার: ${o.customerName} | সাইজ: ${o.size} | পরিমাণ: ${o.quantity} পিস | ডেলিভারি: ${o.area||""} | ঠিকানা: ${o.address}`;
+  const phone=document.createElement("a");
+  phone.href="tel:"+String(o.phone||"").replace(/[^0-9+]/g,"");
+  phone.textContent="ফোন করুন: "+(o.phone||"নম্বর নেই");
+  phone.style.cssText="display:inline-block;margin:6px 0;color:#087b43;font-weight:700";
+  const select=document.createElement("select");
+  ["নতুন","ফোনে যোগাযোগ করা হয়েছে","কনফার্ম","প্রসেসিং","পাঠানো হয়েছে","ডেলিভারি সম্পন্ন","বাতিল"].forEach(s=>{
+    let op=document.createElement("option");op.value=s;op.textContent=s;select.append(op)
+  });
+  select.value=o.status||"নতুন";
+  select.onchange=async()=>{
+    try{await updateDoc(doc(db,"orders",d.id),{status:select.value});}catch(err){alert("স্ট্যাটাস আপডেট হয়নি। Rules পরীক্ষা করুন।");}
+  };
+  el.append(title,detail,phone,select);
+  $("orders").append(el);
+ });
+ if(!snap.size)$("orders").textContent="এখনো কোনো অর্ডার নেই।";
+}
+</script></body></html>
